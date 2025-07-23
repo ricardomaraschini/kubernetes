@@ -4940,6 +4940,23 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: string
       default: ""
+- name: io.k8s.api.core.v1.Binding
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: target
+      type:
+        namedType: io.k8s.api.core.v1.ObjectReference
+      default: {}
 - name: io.k8s.api.core.v1.CSIPersistentVolumeSource
   map:
     fields:
@@ -14026,6 +14043,83 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: numeric
       default: 0
+- name: io.k8s.api.scheduling.v1alpha2.PlacementRequest
+  map:
+    fields:
+    - name: apiVersion
+      type:
+        scalar: string
+    - name: kind
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: spec
+      type:
+        namedType: io.k8s.api.scheduling.v1alpha2.PlacementRequestSpec
+      default: {}
+    - name: status
+      type:
+        namedType: io.k8s.api.scheduling.v1alpha2.PlacementRequestStatus
+      default: {}
+- name: io.k8s.api.scheduling.v1alpha2.PlacementRequestBindingResult
+  map:
+    fields:
+    - name: message
+      type:
+        scalar: string
+    - name: metadata
+      type:
+        namedType: io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta
+      default: {}
+    - name: reason
+      type:
+        scalar: string
+    - name: result
+      type:
+        scalar: string
+      default: ""
+- name: io.k8s.api.scheduling.v1alpha2.PlacementRequestSpec
+  map:
+    fields:
+    - name: bindings
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.core.v1.Binding
+          elementRelationship: atomic
+    - name: policy
+      type:
+        scalar: string
+      default: ""
+    - name: priority
+      type:
+        scalar: numeric
+      default: 0
+    - name: schedulerName
+      type:
+        scalar: string
+- name: io.k8s.api.scheduling.v1alpha2.PlacementRequestStatus
+  map:
+    fields:
+    - name: bindings
+      type:
+        list:
+          elementType:
+            namedType: io.k8s.api.scheduling.v1alpha2.PlacementRequestBindingResult
+          elementRelationship: atomic
+    - name: message
+      type:
+        scalar: string
+    - name: reason
+      type:
+        scalar: string
+    - name: result
+      type:
+        scalar: string
+      default: ""
 - name: io.k8s.api.scheduling.v1beta1.PriorityClass
   map:
     fields:

@@ -64,6 +64,7 @@ import (
 	resourcev1beta2 "k8s.io/api/resource/v1beta2"
 	schedulingv1 "k8s.io/api/scheduling/v1"
 	schedulingv1alpha1 "k8s.io/api/scheduling/v1alpha1"
+	schedulingv1alpha2 "k8s.io/api/scheduling/v1alpha2"
 	schedulingv1beta1 "k8s.io/api/scheduling/v1beta1"
 	storagev1 "k8s.io/api/storage/v1"
 	storagev1alpha1 "k8s.io/api/storage/v1alpha1"
@@ -120,6 +121,7 @@ import (
 	applyconfigurationsresourcev1beta2 "k8s.io/client-go/applyconfigurations/resource/v1beta2"
 	applyconfigurationsschedulingv1 "k8s.io/client-go/applyconfigurations/scheduling/v1"
 	applyconfigurationsschedulingv1alpha1 "k8s.io/client-go/applyconfigurations/scheduling/v1alpha1"
+	applyconfigurationsschedulingv1alpha2 "k8s.io/client-go/applyconfigurations/scheduling/v1alpha2"
 	applyconfigurationsschedulingv1beta1 "k8s.io/client-go/applyconfigurations/scheduling/v1beta1"
 	applyconfigurationsstoragev1 "k8s.io/client-go/applyconfigurations/storage/v1"
 	applyconfigurationsstoragev1alpha1 "k8s.io/client-go/applyconfigurations/storage/v1alpha1"
@@ -686,6 +688,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &applyconfigurationscorev1.AzureFilePersistentVolumeSourceApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("AzureFileVolumeSource"):
 		return &applyconfigurationscorev1.AzureFileVolumeSourceApplyConfiguration{}
+	case corev1.SchemeGroupVersion.WithKind("Binding"):
+		return &applyconfigurationscorev1.BindingApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("Capabilities"):
 		return &applyconfigurationscorev1.CapabilitiesApplyConfiguration{}
 	case corev1.SchemeGroupVersion.WithKind("CephFSPersistentVolumeSource"):
@@ -1786,6 +1790,16 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		// Group=scheduling.k8s.io, Version=v1alpha1
 	case schedulingv1alpha1.SchemeGroupVersion.WithKind("PriorityClass"):
 		return &applyconfigurationsschedulingv1alpha1.PriorityClassApplyConfiguration{}
+
+		// Group=scheduling.k8s.io, Version=v1alpha2
+	case schedulingv1alpha2.SchemeGroupVersion.WithKind("PlacementRequest"):
+		return &applyconfigurationsschedulingv1alpha2.PlacementRequestApplyConfiguration{}
+	case schedulingv1alpha2.SchemeGroupVersion.WithKind("PlacementRequestBindingResult"):
+		return &applyconfigurationsschedulingv1alpha2.PlacementRequestBindingResultApplyConfiguration{}
+	case schedulingv1alpha2.SchemeGroupVersion.WithKind("PlacementRequestSpec"):
+		return &applyconfigurationsschedulingv1alpha2.PlacementRequestSpecApplyConfiguration{}
+	case schedulingv1alpha2.SchemeGroupVersion.WithKind("PlacementRequestStatus"):
+		return &applyconfigurationsschedulingv1alpha2.PlacementRequestStatusApplyConfiguration{}
 
 		// Group=scheduling.k8s.io, Version=v1beta1
 	case schedulingv1beta1.SchemeGroupVersion.WithKind("PriorityClass"):
