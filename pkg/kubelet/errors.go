@@ -21,6 +21,10 @@ import "errors"
 const (
 	// NetworkNotReadyErrorMsg is used to describe the error that network is not ready
 	NetworkNotReadyErrorMsg = "network is not ready"
+
+	// StartDeferredMsg is used as human readable message on an event where
+	// the pod start is deferred due to the run gate not being closed.
+	StartDeferredMsg = "Pod start deferred, waiting for the run gates to open"
 )
 
 var (
