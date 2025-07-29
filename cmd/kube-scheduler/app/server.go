@@ -71,6 +71,7 @@ import (
 	"k8s.io/kubernetes/pkg/scheduler/apis/config/latest"
 	"k8s.io/kubernetes/pkg/scheduler/framework/runtime"
 	"k8s.io/kubernetes/pkg/scheduler/metrics/resources"
+	"k8s.io/kubernetes/pkg/scheduler/placementrequest"
 	"k8s.io/kubernetes/pkg/scheduler/profile"
 )
 
@@ -155,7 +156,7 @@ func runCommand(cmd *cobra.Command, opts *options.Options, registryOptions ...Op
 		cancel()
 	}()
 
-	cc, sched, err := Setup(ctx, opts, registryOptions...)
+	cc, sched, prc, err := Setup(ctx, opts, registryOptions...)
 	if err != nil {
 		return err
 	}
@@ -164,11 +165,11 @@ func runCommand(cmd *cobra.Command, opts *options.Options, registryOptions ...Op
 	// add component version metrics
 	opts.ComponentGlobalsRegistry.AddMetrics()
 
-	return Run(ctx, cc, sched)
+	return Run(ctx, cc, sched, prc)
 }
 
 // Run executes the scheduler based on the given configuration. It only returns on error or when context is done.
-func Run(ctx context.Context, cc *schedulerserverconfig.CompletedConfig, sched *scheduler.Scheduler) error {
+func Run(ctx context.Context, cc *schedulerserverconfig.CompletedConfig, sched *scheduler.Scheduler, prc *placementrequest.PlacementRequestController) error {
 	logger := klog.FromContext(ctx)
 
 	// To help debugging, immediately log version
@@ -305,6 +306,7 @@ func Run(ctx context.Context, cc *schedulerserverconfig.CompletedConfig, sched *
 					startInformersAndWaitForSync(ctx)
 					logger.Info("Sync completed")
 				}
+				go prc.Run(ctx)
 				sched.Run(ctx)
 			},
 			OnStoppedLeading: func() {
@@ -333,6 +335,7 @@ func Run(ctx context.Context, cc *schedulerserverconfig.CompletedConfig, sched *
 
 	// Leader election is disabled, so runCommand inline until done.
 	close(waitingForLeader)
+	go prc.Run(ctx)
 	sched.Run(ctx)
 	gracefulShutdownSecureServer()
 	return fmt.Errorf("finished without leader elect")
@@ -413,20 +416,20 @@ func WithPlugin(name string, factory runtime.PluginFactory) Option {
 }
 
 // Setup creates a completed config and a scheduler based on the command args and options
-func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions ...Option) (*schedulerserverconfig.CompletedConfig, *scheduler.Scheduler, error) {
+func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions ...Option) (*schedulerserverconfig.CompletedConfig, *scheduler.Scheduler, *placementrequest.PlacementRequestController, error) {
 	if cfg, err := latest.Default(); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	} else {
 		opts.ComponentConfig = cfg
 	}
 
 	if errs := opts.Validate(); len(errs) > 0 {
-		return nil, nil, utilerrors.NewAggregate(errs)
+		return nil, nil, nil, utilerrors.NewAggregate(errs)
 	}
 
 	c, err := opts.Config(ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	// Get the completed config
@@ -435,7 +438,7 @@ func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions 
 	outOfTreeRegistry := make(runtime.Registry)
 	for _, option := range outOfTreeRegistryOptions {
 		if err := option(outOfTreeRegistry); err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 	}
 
@@ -463,11 +466,16 @@ func Setup(ctx context.Context, opts *options.Options, outOfTreeRegistryOptions 
 		}),
 	)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if err := options.LogOrWriteConfig(klog.FromContext(ctx), opts.WriteConfigTo, &cc.ComponentConfig, completedProfiles); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return &cc, sched, nil
+	prc, err := placementrequest.New(ctx, cc.Client, cc.InformerFactory)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return &cc, sched, prc, nil
 }
