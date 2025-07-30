@@ -40,7 +40,7 @@ type REST struct {
 func NewREST(optsGetter generic.RESTOptionsGetter) (*REST, error) {
 	store := &genericregistry.Store{
 		NewFunc:                   func() runtime.Object { return &scheduling.PlacementRequest{} },
-		NewListFunc:               func() runtime.Object { return &scheduling.PlacementRequest{} },
+		NewListFunc:               func() runtime.Object { return &scheduling.PlacementRequestList{} },
 		DefaultQualifiedResource:  scheduling.Resource("placementrequests"),
 		SingularQualifiedResource: scheduling.Resource("placementrequest"),
 
