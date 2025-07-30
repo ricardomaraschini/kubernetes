@@ -67,6 +67,22 @@ func (p RESTStorageProvider) NewRESTStorage(apiResourceConfigSource serverstorag
 func (p RESTStorageProvider) v1alpha2Storage(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter) (map[string]rest.Storage, error) {
 	storage := map[string]rest.Storage{}
 
+	result := apiResourceConfigSource.ResourceEnabled(schedulingapiv1alpha2.SchemeGroupVersion.WithResource("placementrequests"))
+
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("ricardo: ", result)
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+	fmt.Println("")
+
 	// placementrequests
 	if resource := "placementrequests"; apiResourceConfigSource.ResourceEnabled(schedulingapiv1alpha2.SchemeGroupVersion.WithResource(resource)) {
 		if placementRequestStorage, err := placementrequeststore.NewREST(restOptionsGetter); err != nil {
