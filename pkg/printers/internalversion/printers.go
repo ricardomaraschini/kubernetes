@@ -512,6 +512,13 @@ func AddHandlers(h printers.PrintHandler) {
 	_ = h.TableHandler(priorityClassColumnDefinitions, printPriorityClass)
 	_ = h.TableHandler(priorityClassColumnDefinitions, printPriorityClassList)
 
+	placementRequestColumnDefinitions := []metav1.TableColumnDefinition{
+		{Name: "Name", Type: "string", Format: "name", Description: metav1.ObjectMeta{}.SwaggerDoc()["name"]},
+		{Name: "Age", Type: "string", Description: metav1.ObjectMeta{}.SwaggerDoc()["creationTimestamp"]},
+	}
+	_ = h.TableHandler(placementRequestColumnDefinitions, printPlacementRequest)
+	_ = h.TableHandler(placementRequestColumnDefinitions, printPlacementRequestList)
+
 	runtimeClassColumnDefinitions := []metav1.TableColumnDefinition{
 		{Name: "Name", Type: "string", Format: "name", Description: metav1.ObjectMeta{}.SwaggerDoc()["name"]},
 		{Name: "Handler", Type: "string", Description: metav1.ObjectMeta{}.SwaggerDoc()["handler"]},
@@ -2868,6 +2875,16 @@ func printResourceQuotaList(list *api.ResourceQuotaList, options printers.Genera
 	return rows, nil
 }
 
+func printPlacementRequest(obj *scheduling.PlacementRequest, options printers.GenerateOptions) ([]metav1.TableRow, error) {
+	row := metav1.TableRow{
+		Object: runtime.RawExtension{Object: obj},
+	}
+
+	name := obj.Name
+	row.Cells = append(row.Cells, name, translateTimestampSince(obj.CreationTimestamp))
+	return []metav1.TableRow{row}, nil
+}
+
 func printPriorityClass(obj *scheduling.PriorityClass, options printers.GenerateOptions) ([]metav1.TableRow, error) {
 	row := metav1.TableRow{
 		Object: runtime.RawExtension{Object: obj},
@@ -2885,6 +2902,18 @@ func printPriorityClass(obj *scheduling.PriorityClass, options printers.Generate
 		row.Cells = append(row.Cells, preemptionPolicy)
 	}
 	return []metav1.TableRow{row}, nil
+}
+
+func printPlacementRequestList(list *scheduling.PlacementRequestList, options printers.GenerateOptions) ([]metav1.TableRow, error) {
+	rows := make([]metav1.TableRow, 0, len(list.Items))
+	for i := range list.Items {
+		r, err := printPlacementRequest(&list.Items[i], options)
+		if err != nil {
+			return nil, err
+		}
+		rows = append(rows, r...)
+	}
+	return rows, nil
 }
 
 func printPriorityClassList(list *scheduling.PriorityClassList, options printers.GenerateOptions) ([]metav1.TableRow, error) {
