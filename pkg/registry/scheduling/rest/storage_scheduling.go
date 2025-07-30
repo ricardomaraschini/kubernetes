@@ -35,6 +35,8 @@ import (
 	"k8s.io/kubernetes/pkg/api/legacyscheme"
 	"k8s.io/kubernetes/pkg/apis/scheduling"
 	schedulingapiv1 "k8s.io/kubernetes/pkg/apis/scheduling/v1"
+	schedulingapiv1alpha2 "k8s.io/kubernetes/pkg/apis/scheduling/v1alpha2"
+	placementrequeststore "k8s.io/kubernetes/pkg/registry/scheduling/placementrequest/storage"
 	priorityclassstore "k8s.io/kubernetes/pkg/registry/scheduling/priorityclass/storage"
 )
 
@@ -53,7 +55,28 @@ func (p RESTStorageProvider) NewRESTStorage(apiResourceConfigSource serverstorag
 		apiGroupInfo.VersionedResourcesStorageMap[schedulingapiv1.SchemeGroupVersion.Version] = storageMap
 	}
 
+	if storageMap, err := p.v1alpha2Storage(apiResourceConfigSource, restOptionsGetter); err != nil {
+		return genericapiserver.APIGroupInfo{}, err
+	} else if len(storageMap) > 0 {
+		apiGroupInfo.VersionedResourcesStorageMap[schedulingapiv1alpha2.SchemeGroupVersion.Version] = storageMap
+	}
+
 	return apiGroupInfo, nil
+}
+
+func (p RESTStorageProvider) v1alpha2Storage(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter) (map[string]rest.Storage, error) {
+	storage := map[string]rest.Storage{}
+
+	// placementrequests
+	if resource := "placementrequests"; apiResourceConfigSource.ResourceEnabled(schedulingapiv1alpha2.SchemeGroupVersion.WithResource(resource)) {
+		if placementRequestStorage, err := placementrequeststore.NewREST(restOptionsGetter); err != nil {
+			return nil, err
+		} else {
+			storage[resource] = placementRequestStorage
+		}
+	}
+
+	return storage, nil
 }
 
 func (p RESTStorageProvider) v1Storage(apiResourceConfigSource serverstorage.APIResourceConfigSource, restOptionsGetter generic.RESTOptionsGetter) (map[string]rest.Storage, error) {
