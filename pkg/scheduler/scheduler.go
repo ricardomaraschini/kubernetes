@@ -23,6 +23,7 @@ import (
 	"time"
 
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/scheduling/v1alpha2"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -30,6 +31,7 @@ import (
 	"k8s.io/client-go/dynamic/dynamicinformer"
 	"k8s.io/client-go/informers"
 	coreinformers "k8s.io/client-go/informers/core/v1"
+	schedulingv1alpha2informers "k8s.io/client-go/informers/scheduling/v1alpha2"
 	clientset "k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
@@ -522,6 +524,7 @@ func (sched *Scheduler) Run(ctx context.Context) {
 func NewInformerFactory(cs clientset.Interface, resyncPeriod time.Duration) informers.SharedInformerFactory {
 	informerFactory := informers.NewSharedInformerFactory(cs, resyncPeriod)
 	informerFactory.InformerFor(&v1.Pod{}, newPodInformer)
+	informerFactory.InformerFor(&v1alpha2.PlacementRequest{}, newPlacementRequestInformer)
 	return informerFactory
 }
 
@@ -620,4 +623,8 @@ func newPodInformer(cs clientset.Interface, resyncPeriod time.Duration) cache.Sh
 	}
 	informer.SetTransform(trim)
 	return informer
+}
+
+func newPlacementRequestInformer(cs clientset.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return schedulingv1alpha2informers.NewPlacementRequestInformer(cs, metav1.NamespaceAll, resyncPeriod, cache.Indexers{})
 }

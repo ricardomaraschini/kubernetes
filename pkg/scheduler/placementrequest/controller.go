@@ -28,6 +28,7 @@ type PlacementRequestController struct {
 // only when the provided context is done. XXX some more error handling is
 // needed here.
 func (prc *PlacementRequestController) Run(ctx context.Context) {
+	go prc.iterator.Run(ctx)
 	for {
 		select {
 		case pr := <-prc.iterator.Next:
@@ -48,9 +49,10 @@ func (prc *PlacementRequestController) ScheduleOne(
 	pr.Status.Message = "The request was successfully scheduled"
 
 	updater := prc.client.SchedulingV1alpha2().PlacementRequests(pr.Namespace)
-	if _, err := updater.UpdateStatus(ctx, pr, metav1.UpdateOptions{}); err != nil {
+	if _, err := updater.Update(ctx, pr, metav1.UpdateOptions{}); err != nil {
 		return fmt.Errorf("failed to update placement request status: %w", err)
 	}
+	fmt.Println("Placement request scheduled successfully:", pr.Name)
 	return nil
 }
 
