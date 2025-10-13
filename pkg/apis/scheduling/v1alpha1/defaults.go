@@ -34,3 +34,8 @@ func SetDefaults_PriorityClass(obj *v1alpha1.PriorityClass) {
 		obj.PreemptionPolicy = &preemptLowerPriority
 	}
 }
+
+// SetDefaults_Workload sets additional defaults compared to its counterpart
+// in extensions.
+func SetDefaults_Workload(obj *v1alpha1.Workload) {
+}

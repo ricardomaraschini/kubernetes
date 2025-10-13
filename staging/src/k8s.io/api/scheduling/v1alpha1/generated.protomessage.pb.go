@@ -21,6 +21,24 @@ limitations under the License.
 
 package v1alpha1
 
+func (*DefaultSchedulingPolicy) ProtoMessage() {}
+
+func (*GangSchedulingPolicy) ProtoMessage() {}
+
+func (*PodGroup) ProtoMessage() {}
+
+func (*PodGroupList) ProtoMessage() {}
+
+func (*PodGroupPolicy) ProtoMessage() {}
+
 func (*PriorityClass) ProtoMessage() {}
 
 func (*PriorityClassList) ProtoMessage() {}
+
+func (*Workload) ProtoMessage() {}
+
+func (*WorkloadList) ProtoMessage() {}
+
+func (*WorkloadSpec) ProtoMessage() {}
+
+func (*WorkloadStatus) ProtoMessage() {}

@@ -510,6 +510,13 @@ func AddHandlers(h printers.PrintHandler) {
 	_ = h.TableHandler(priorityClassColumnDefinitions, printPriorityClass)
 	_ = h.TableHandler(priorityClassColumnDefinitions, printPriorityClassList)
 
+	workloadColumnDefinitions := []metav1.TableColumnDefinition{
+		{Name: "Name", Type: "string", Format: "name", Description: metav1.ObjectMeta{}.SwaggerDoc()["name"]},
+		{Name: "Age", Type: "string", Description: metav1.ObjectMeta{}.SwaggerDoc()["creationTimestamp"]},
+	}
+	_ = h.TableHandler(workloadColumnDefinitions, printWorkload)
+	_ = h.TableHandler(workloadColumnDefinitions, printWorkloadList)
+
 	runtimeClassColumnDefinitions := []metav1.TableColumnDefinition{
 		{Name: "Name", Type: "string", Format: "name", Description: metav1.ObjectMeta{}.SwaggerDoc()["name"]},
 		{Name: "Handler", Type: "string", Description: metav1.ObjectMeta{}.SwaggerDoc()["handler"]},
@@ -2890,6 +2897,24 @@ func printPriorityClass(obj *scheduling.PriorityClass, options printers.Generate
 		row.Cells = append(row.Cells, preemptionPolicy)
 	}
 	return []metav1.TableRow{row}, nil
+}
+
+func printWorkload(obj *scheduling.Workload, _ printers.GenerateOptions) ([]metav1.TableRow, error) {
+	row := metav1.TableRow{Object: runtime.RawExtension{Object: obj}}
+	row.Cells = append(row.Cells, obj.Name, translateTimestampSince(obj.CreationTimestamp))
+	return []metav1.TableRow{row}, nil
+}
+
+func printWorkloadList(list *scheduling.WorkloadList, options printers.GenerateOptions) ([]metav1.TableRow, error) {
+	rows := make([]metav1.TableRow, 0, len(list.Items))
+	for i := range list.Items {
+		r, err := printWorkload(&list.Items[i], options)
+		if err != nil {
+			return nil, err
+		}
+		rows = append(rows, r...)
+	}
+	return rows, nil
 }
 
 func printPriorityClassList(list *scheduling.PriorityClassList, options printers.GenerateOptions) ([]metav1.TableRow, error) {

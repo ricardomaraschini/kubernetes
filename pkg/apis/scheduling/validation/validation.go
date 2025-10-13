@@ -27,6 +27,10 @@ import (
 	schedulingapiv1 "k8s.io/kubernetes/pkg/apis/scheduling/v1"
 )
 
+func ValidateWorkload(pc *scheduling.Workload) field.ErrorList {
+	return nil
+}
+
 // ValidatePriorityClass tests whether required fields in the PriorityClass are
 // set correctly.
 func ValidatePriorityClass(pc *scheduling.PriorityClass) field.ErrorList {
@@ -60,4 +64,8 @@ func ValidatePriorityClassUpdate(pc, oldPc *scheduling.PriorityClass) field.Erro
 	// preemptionPolicy is immutable.
 	allErrs = append(allErrs, apivalidation.ValidateImmutableField(pc.PreemptionPolicy, oldPc.PreemptionPolicy, field.NewPath("preemptionPolicy"))...)
 	return allErrs
+}
+
+func ValidateWorkloadUpdate(pc, oldPc *scheduling.Workload) field.ErrorList {
+	return nil
 }

@@ -22,6 +22,31 @@ limitations under the License.
 package v1alpha1
 
 // OpenAPIModelName returns the OpenAPI model name for this type.
+func (in DefaultSchedulingPolicy) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.DefaultSchedulingPolicy"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in GangSchedulingPolicy) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.GangSchedulingPolicy"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in PodGroup) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.PodGroup"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in PodGroupList) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.PodGroupList"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in PodGroupPolicy) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.PodGroupPolicy"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
 func (in PriorityClass) OpenAPIModelName() string {
 	return "io.k8s.api.scheduling.v1alpha1.PriorityClass"
 }
@@ -29,4 +54,24 @@ func (in PriorityClass) OpenAPIModelName() string {
 // OpenAPIModelName returns the OpenAPI model name for this type.
 func (in PriorityClassList) OpenAPIModelName() string {
 	return "io.k8s.api.scheduling.v1alpha1.PriorityClassList"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in Workload) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.Workload"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in WorkloadList) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.WorkloadList"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in WorkloadSpec) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.WorkloadSpec"
+}
+
+// OpenAPIModelName returns the OpenAPI model name for this type.
+func (in WorkloadStatus) OpenAPIModelName() string {
+	return "io.k8s.api.scheduling.v1alpha1.WorkloadStatus"
 }

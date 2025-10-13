@@ -29,6 +29,51 @@ import "k8s.io/apimachinery/pkg/runtime/schema/generated.proto";
 // Package-wide variables from generator "generated".
 option go_package = "k8s.io/api/scheduling/v1alpha1";
 
+// DefaultSchedulingPolicy represents default scheduling behavior.
+// For now this is effectively just a marker type.
+message DefaultSchedulingPolicy {
+}
+
+// GangSchedulingPolicy represents options for how gang scheduling of one
+// PodGroup should be handled.
+message GangSchedulingPolicy {
+  optional int32 minCount = 1;
+}
+
+// PodGroup is a group of pods that may contain multiple shapes (PodSets) and
+// may contain multiple dense indexes (PodSubGroups) and which can optionally
+// be replicated in a variable number of identical copies.
+message PodGroup {
+  optional string name = 1;
+
+  // Number of identical instances of PodGroup that are part of the
+  // Workload. Defaults to 1.
+  optional int32 replicas = 2;
+
+  // Policy defines the configuration of the PodGroup to enable different
+  // scheduling policies.
+  optional PodGroupPolicy policy = 3;
+}
+
+message PodGroupList {
+  optional .k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+
+  repeated PodGroup items = 2;
+}
+
+// PodGroupPolicy defines scheduling configuration of a PodGroup.
+message PodGroupPolicy {
+  // Kind indicates which of the other fields is non-empty. Required.
+  // +unionDiscriminator
+  optional string kind = 1;
+
+  // Default scheduling policy (default Kubernetes behavior).
+  optional DefaultSchedulingPolicy default = 2;
+
+  // Gang scheduling policy (all-or-nothing scheduling semantics).
+  optional GangSchedulingPolicy gang = 3;
+}
+
 // DEPRECATED - This group version of PriorityClass is deprecated by scheduling.k8s.io/v1/PriorityClass.
 // PriorityClass defines mapping from a priority class name to the priority
 // integer value. The value can be any valid integer.
@@ -71,5 +116,40 @@ message PriorityClassList {
 
   // items is the list of PriorityClasses
   repeated PriorityClass items = 2;
+}
+
+// Workload is a top-level type that represents a collection of PodGroups.
+message Workload {
+  optional .k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
+
+  optional WorkloadSpec spec = 2;
+
+  optional WorkloadStatus status = 3;
+}
+
+message WorkloadList {
+  // +optional
+  optional .k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+
+  repeated Workload items = 2;
+}
+
+message WorkloadSpec {
+  // ControllerRef points to the true workload, e.g. Deployment. It is
+  // optional to set and is intended to make this mapping easier for
+  // things like CLI tools. This field is immutable.
+  optional .k8s.io.api.core.v1.ObjectReference controllerRef = 1;
+
+  // PodGroups is a list of groups of pods. Each group may request gang
+  // scheduling.
+  // +optional
+  // +patchMergeKey=name
+  // +patchStrategy=merge,retainKeys
+  // +listType=map
+  // +listMapKey=name
+  repeated PodGroup podGroups = 2;
+}
+
+message WorkloadStatus {
 }
 
