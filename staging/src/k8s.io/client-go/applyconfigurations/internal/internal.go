@@ -7633,6 +7633,9 @@ var schemaYAML = typed.YAMLObject(`types:
           elementRelationship: associative
           keys:
           - name
+    - name: workload
+      type:
+        namedType: io.k8s.api.core.v1.WorkloadReference
 - name: io.k8s.api.core.v1.PodStatus
   map:
     fields:
@@ -9005,6 +9008,20 @@ var schemaYAML = typed.YAMLObject(`types:
       type:
         scalar: boolean
     - name: runAsUserName
+      type:
+        scalar: string
+- name: io.k8s.api.core.v1.WorkloadReference
+  map:
+    fields:
+    - name: name
+      type:
+        scalar: string
+      default: ""
+    - name: podGroup
+      type:
+        scalar: string
+      default: ""
+    - name: podGroupReplicaIndex
       type:
         scalar: string
 - name: io.k8s.api.discovery.v1.Endpoint

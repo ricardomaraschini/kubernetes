@@ -60,7 +60,7 @@ type WorkloadSpec struct {
 
 type PodGroupList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
 	Items           []PodGroup `json:"items" protobuf:"bytes,2,rep,name=items"`
 }
 
@@ -110,7 +110,7 @@ type WorkloadStatus struct{}
 type WorkloadList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
-	metav1.ListMeta `json:"metadata" protobuf:"bytes,1,opt,name=metadata"`
+	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
 
 	Items []Workload `json:"items" protobuf:"bytes,2,rep,name=items"`
 }

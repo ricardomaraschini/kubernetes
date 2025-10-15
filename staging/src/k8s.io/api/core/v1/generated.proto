@@ -4711,6 +4711,10 @@ message PodSpec {
   // +featureGate=HostnameOverride
   // +optional
   optional string hostnameOverride = 41;
+
+  // Workload specifies the workload this pod belongs to.
+  // +optional
+  optional WorkloadReference workload = 42;
 }
 
 // PodStatus represents information about the status of a pod. Status may trail the actual
@@ -7197,5 +7201,22 @@ message WindowsSecurityContextOptions {
   // In addition, if HostProcess is true then HostNetwork must also be set to true.
   // +optional
   optional bool hostProcess = 4;
+}
+
+// WorkloadReference identifies the Workload object and PodGroup membership
+// that a Pod belongs to. The scheduler uses this information to enforce
+// gang scheduling semantics.
+message WorkloadReference {
+  // Name defines the name of the Workload object this pod belongs to.
+  optional string name = 1;
+
+  // PodGroup defines the name of the PodGroup within a Workload this pod belongs to.
+  optional string podGroup = 2;
+
+  // PodGroupReplicaIndex is the replica index of the PodGroup that this pod
+  // belong to when the workload is running ReplicatedGangMode. In this mode,
+  // a workload may create multiple identical PodGroups.
+  // For workload in a different mode, this field is unset.
+  optional string podGroupReplicaIndex = 3;
 }
 

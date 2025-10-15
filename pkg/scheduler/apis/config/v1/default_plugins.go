@@ -31,6 +31,7 @@ func getDefaultPlugins() *v1.Plugins {
 	plugins := &v1.Plugins{
 		MultiPoint: v1.PluginSet{
 			Enabled: []v1.Plugin{
+				{Name: names.GangScheduling},
 				{Name: names.SchedulingGates},
 				{Name: names.PrioritySort},
 				{Name: names.NodeUnschedulable},

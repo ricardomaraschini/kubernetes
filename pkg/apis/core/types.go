@@ -3871,6 +3871,27 @@ type PodSpec struct {
 	// +featureGate=HostnameOverride
 	// +optional
 	HostnameOverride *string
+
+	// Workload specifies the workload this pod belongs to.
+	// +optional
+	Workload *WorkloadReference
+}
+
+// WorkloadReference identifies the Workload object and PodGroup membership
+// that a Pod belongs to. The scheduler uses this information to enforce
+// gang scheduling semantics.
+type WorkloadReference struct {
+	// Name defines the name of the Workload object this pod belongs to.
+	Name string
+
+	// PodGroup defines the name of the PodGroup within a Workload this pod belongs to.
+	PodGroup string
+
+	// PodGroupReplicaIndex is the replica index of the PodGroup that this pod
+	// belong to when the workload is running ReplicatedGangMode. In this mode,
+	// a workload may create multiple identical PodGroups.
+	// For workload in a different mode, this field is unset.
+	PodGroupReplicaIndex string
 }
 
 // PodResourceClaim references exactly one ResourceClaim through a ClaimSource.

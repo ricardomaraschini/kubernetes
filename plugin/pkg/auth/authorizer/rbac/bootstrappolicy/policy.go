@@ -58,6 +58,7 @@ const (
 	rbacGroup                    = "rbac.authorization.k8s.io"
 	resourceGroup                = "resource.k8s.io"
 	storageGroup                 = "storage.k8s.io"
+	schedulingGroup              = "scheduling.k8s.io"
 	resMetricsGroup              = "metrics.k8s.io"
 	customMetricsGroup           = "custom.metrics.k8s.io"
 	externalMetricsGroup         = "external.metrics.k8s.io"
@@ -630,6 +631,8 @@ func ClusterRoles() []rbacv1.ClusterRole {
 		rbacv1helpers.NewRule(Read...).Groups(legacyGroup).Resources("namespaces").RuleOrDie(),
 		rbacv1helpers.NewRule(Read...).Groups(storageGroup).Resources("csidrivers").RuleOrDie(),
 		rbacv1helpers.NewRule(Read...).Groups(storageGroup).Resources("csistoragecapacities").RuleOrDie(),
+		// Needed for gang scheduling
+		rbacv1helpers.NewRule("get", "list", "watch").Groups(schedulingGroup).Resources("workloads").RuleOrDie(),
 	}
 	// Needed for dynamic resource allocation.
 	if utilfeature.DefaultFeatureGate.Enabled(features.DynamicResourceAllocation) {

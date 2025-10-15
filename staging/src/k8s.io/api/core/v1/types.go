@@ -4419,6 +4419,7 @@ type PodSpec struct {
 	HostnameOverride *string `json:"hostnameOverride,omitempty" protobuf:"bytes,41,opt,name=hostnameOverride"`
 
 	// Workload specifies the workload this pod belongs to.
+	// +optional
 	Workload *WorkloadReference `json:"workload,omitempty" protobuf:"bytes,42,opt,name=workload"`
 }
 
